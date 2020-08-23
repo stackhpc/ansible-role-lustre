@@ -1,0 +1,18 @@
+---
+
+lustre_e2fsprogs_packages:
+  - 'e2fsprogs'
+  - 'e2fsprogs-libs'
+  - 'libcom_err'
+  - 'libss'
+
+lustre_server_packages:
+  - 'lustre'
+  - 'kmod-lustre'
+  - 'kmod-lustre-osd-ldiskfs'
+  - 'lustre-osd-ldiskfs-mount'
+
+lustre_server_legacy_packages:
+  - 'lustre'
+  - 'lustre-modules'
+  - 'lustre-osd-ldiskfs'

@@ -1,0 +1,38 @@
+---
+- name: "Configure Lustre server repository"
+  when: lustre_e2fsprogs_manage_repo | bool
+  block:
+    - name: "Install e2fsprogs yum repo"
+      yum_repository:
+        name: "{{ lustre_e2fsprogs_repo_name }}"
+        description: "{{ lustre_e2fsprogs_repo_description }}"
+        baseurl: "{{ lustre_e2fsprogs_repo_baseurl }}"
+        gpgcheck: "{{ lustre_e2fsprogs_repo_gpgcheck | default('no') }}"
+        gpgkey: "{{ lustre_e2fsprogs_repo_gpgkey | default(omit) }}"
+        enabled: "{{ lustre_e2fsprogs_repo_enabled | default('no') }}"
+      register: _lustre_e2fsprogs_repo
+
+    - name: "Install e2fsprogs yum repo gpgkey"
+      rpm_key:
+        state: present
+        key: "{{ lustre_e2fsprogs_repo_gpgkey }}"
+        fingerprint: "{{ lustre_e2fsprogs_repo_gpgkey_fingerprint | default(omit) }}"
+      when: lustre_e2fsprogs_repo_gpgkey is defined
+
+    - name: "Clean yum cache if repository updated (1)"
+      command: yum clean all
+      args:
+        warn: false
+      when: _lustre_e2fsprogs_repo.changed
+
+    - name: "Clean yum cache if repository updated (2)"
+      command: rm -rf /var/cache/yum
+      args:
+        warn: false
+      when: _lustre_e2fsprogs_repo.changed
+
+- name: "Install e2fsprogs packages"
+  yum:
+    name: "{{ lustre_e2fsprogs_packages }}"
+    enablerepo: "{{ lustre_e2fsprogs_repo_name | default(omit) }}"
+    state: present

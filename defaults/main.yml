@@ -1,2 +1,29 @@
 ---
-# defaults file for ansible-lustre
+
+# MANDATORY Variables
+#=====================
+# Accepted values here: 'server', 'client'
+lustre_install_type: 'server'
+lustre_version: '2.12.5'
+
+# Optional Variables
+#=====================
+# Choose whether to install custom Yum repo to install mofed from
+lustre_manage_repo: true
+lustre_repo_name: 'lustre-{{ lustre_install_type }}'
+lustre_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}/server"
+lustre_repo_description: "Lustre Server - Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_version }} - {{ ansible_architecture }}"
+lustre_repo_enabled: true
+lustre_repo_gpgcheck: false
+#lustre_repo_gpgkey:
+#lustre_repo_gpgkey_fingerprint:
+
+lustre_e2fsprogs_manage_repo: true
+lustre_e2fsprogs_repo_name: 'lustre-e2fsprogs'
+lustre_e2fsprogs_version: 'latest'
+lustre_e2fsprogs_repo_baseurl: "https://downloads.whamcloud.com/public/e2fsprogs/{{ lustre_e2fsprogs_version }}/el{{ ansible_distribution_major_version }}"
+lustre_e2fsprogs_repo_description: "e2fsprogs - Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_version }} - {{ ansible_architecture }}"
+lustre_e2fsprogs_repo_enabled: true
+lustre_e2fsprogs_repo_gpgcheck: false
+#lustre_e2fsprogs_repo_gpgkey:
+#lustre_e2fsprogs_repo_gpgkey_fingerprint:
