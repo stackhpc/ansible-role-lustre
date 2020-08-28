@@ -1,20 +1,17 @@
 ---
-- name: "Include OS-specific e2fsprogs installation tasks"
-  include_tasks: "install-e2fsprogs-{{ ansible_os_family }}.yml"
-
 - name: "Include OS-specific lustre repo configuration tasks"
   include_tasks: "install-repo-{{ ansible_os_family }}.yml"
 
-- name: "Install Lustre server packages"
+- name: "Install Lustre client packages"
   yum:
-    name: "{{ lustre_server_packages }}"
+    name: "{{ lustre_client_packages }}"
     enablerepo: "{{ lustre_repo_name | default(omit) }}"
     state: present
   when: lustre_version is version('2.9.0', '>=')
 
-- name: "Install Lustre (legacy) server packages"
+- name: "Install Lustre (legacy) client packages"
   yum:
-    name: "{{ lustre_server_legacy_packages }}"
+    name: "{{ lustre_client_legacy_packages }}"
     enablerepo: "{{ lustre_repo_name | default(omit) }}"
     state: present
   when: lustre_version is version('2.9.0', '<')

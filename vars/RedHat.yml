@@ -16,3 +16,11 @@ lustre_server_legacy_packages:
   - 'lustre'
   - 'lustre-modules'
   - 'lustre-osd-ldiskfs'
+
+lustre_client_packages:
+  - 'lustre-client'
+  - 'kmod-lustre-client'
+
+lustre_client_legacy_packages:
+  - 'lustre-client'
+  - 'lustre-client-modules'

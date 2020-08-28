@@ -7,5 +7,10 @@
   when:
     - lustre_install_type == 'server'
 
+- name: "Include OS-specific package client installation tasks"
+  include_tasks: "install-client-{{ ansible_os_family }}.yml"
+  when:
+    - lustre_install_type == 'client'
+
 - name: "Include LNET configuration tasks"
   include_tasks: "lnet.yml"
