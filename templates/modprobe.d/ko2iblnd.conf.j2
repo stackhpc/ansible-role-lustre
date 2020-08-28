@@ -1,0 +1,25 @@
+#jinja2:lstrip_blocks: True
+# {{ ansible_managed }}
+
+# Currently it isn't possible to auto-tune the o2iblnd parameters optimally
+# inside the kernel since the OFED API hides the details from us.
+# Unfortunately, there isn't a single set of parameters that provide optimal
+# performance on different HCA/HFI types. This file provides optimized
+# tunables for the OPA cards.
+#
+# ** Please note that the below settings are the recommended settings only for
+#    OPA cards. If other IB cards are also present along with OPA cards then
+#    these settings will be applied across all the configured IB interfaces.
+#
+# Card detection and tunable selection is handled via /usr/sbin/ko2iblnd-probe
+# at runtime when the ko2iblnd module is installed, either at boot or when
+# Lustre is first mounted.
+
+alias ko2iblnd-opa ko2iblnd
+options ko2iblnd-opa{% for name, value in lustre_lnet_ko2iblnd_opa_options.items() %} {{ name }}={{ value }}{% endfor %}
+
+{% if lustre_lnet_ko2iblnd_options is defined %}
+# Add default options for non-OPA cards
+options ko2iblnd{% for name, value in lustre_lnet_ko2iblnd_options.items() %} {{ name }}={{ value }}{% endfor %}
+{% endif %}
+install ko2iblnd /usr/sbin/ko2iblnd-probe

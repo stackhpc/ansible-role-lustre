@@ -6,3 +6,6 @@
   include_tasks: "install-server-{{ ansible_os_family }}.yml"
   when:
     - lustre_install_type == 'server'
+
+- name: "Include LNET configuration tasks"
+  include_tasks: "lnet.yml"

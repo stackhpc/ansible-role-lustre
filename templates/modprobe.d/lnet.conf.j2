@@ -1,0 +1,3 @@
+#jinja2:lstrip_blocks: True
+# {{ ansible_managed }}
+options lnet{% if lustre_lnet_module_networks is defined %} networks="{{ lustre_lnet_module_networks | join(', ') }}"{% endif %}{% if lustre_lnet_module_routes is defined %} routes="{{ lustre_lnet_module_routes | join('; ') }}"{% endif %}{% if lustre_lnet_module_options is defined %}{% for name, value in lustre_lnet_module_options.items() %} {{ name }}={{ value }}{% endfor %}{% endif %}

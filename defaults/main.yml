@@ -27,3 +27,43 @@ lustre_e2fsprogs_repo_enabled: true
 lustre_e2fsprogs_repo_gpgcheck: false
 #lustre_e2fsprogs_repo_gpgkey:
 #lustre_e2fsprogs_repo_gpgkey_fingerprint:
+
+lustre_lnet_ko2iblnd_opa_options:
+  peer_credits: '32'
+  peer_credits_hiw: '16'
+  credits: '1024'
+  concurrent_sends: '64'
+  ntx: '2048'
+  map_on_demand: '256'
+  fmr_pool_size: '2048'
+  fmr_flush_trigger: '512'
+  fmr_cache: '1'
+  conns_per_peer: '4'
+
+# EXAMPLE legacy lnet module options
+#lustre_lnet_module_networks:
+#  - 'o2ib0(ib0)'
+#lustre_lnet_module_options:
+#  'auto_down': '1'
+#  'avoid_asym_router_failure': '1'
+#  'check_routers_before_use': '1'
+#  'live_router_check_interval': '60'
+#  'dead_router_check_interval': '60'
+#  'router_ping_timeout': '60'
+#lustre_lnet_module_routes:
+#  - 'tcp2 1 10.0.0.[1-8]@o2ib0'
+#  - 'tcp3 1 10.0.0.[1-8]@o2ib0'
+
+# EXAMPLE LNETCTL configuration options
+#lustre_lnet_lnetctl_networks:
+#  'o2ib2':
+#    '10.44.241.5':
+#      interfaces:
+#         - 'ib0'
+#      tunables:
+#        peer_credits: '32'
+#        peer_credits_hiw: '16'
+#        concurrent_sends: '16'
+#        map_on_demand: '256'
+#        credits: '2048'
+#        ntx: '2048'
