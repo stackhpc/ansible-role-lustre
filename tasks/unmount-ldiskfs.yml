@@ -1,0 +1,49 @@
+---
+- name: "Stop MDTs"
+  when:
+    - lustre_format_mdts is defined
+  block:
+    - name: "unmount MDTs"
+      command: "umount {{ lustre_mount_prefix }}/{{ lustre_fsname }}-MDT{{ '%04x' % item.index | int }}"
+      register: cmd_mgt_result
+      failed_when: "cmd_mgt_result.rc != 0 and ('not mounted' not in cmd_mgt_result.stderr) and ('mountpoint not found' not in cmd_mgt_result.stderr)"
+      changed_when: "cmd_mgt_result.rc == 0"
+      with_items: "{{ lustre_format_mdts }}"
+
+    - name: "Remove MDT mount dir"
+      file:
+        path: "{{ lustre_mount_prefix }}/{{ lustre_fsname }}-MDT{{ '%04x' % item.index | int }}"
+        state: absent
+      with_items: "{{ lustre_format_mdts }}"
+
+- name: "Stop OSTs"
+  when:
+    - lustre_format_osts is defined
+  block:
+    - name: "unmount OSTs"
+      command: "umount {{ lustre_mount_prefix }}/{{ lustre_fsname }}-OST{{ '%04x' % item.index | int }}"
+      register: cmd_ost_result
+      failed_when: "cmd_ost_result.rc != 0 and ('not mounted' not in cmd_ost_result.stderr) and ('mountpoint not found' not in cmd_ost_result.stderr)"
+      changed_when: "cmd_ost_result.rc == 0"
+      with_items: "{{ lustre_format_osts }}"
+
+    - name: "Remove OST mount dir"
+      file:
+        path: "{{ lustre_mount_prefix }}/{{ lustre_fsname }}-OST{{ '%04x' % item.index | int }}"
+        state: absent
+      with_items: "{{ lustre_format_osts }}"
+
+- name: "Stop MGS"
+  when:
+    - lustre_format_mgs is defined
+  block:
+    - name: "unmount MGS"
+      command: "umount {{ lustre_mount_prefix }}/MGS"
+      register: cmd_mgs_result
+      failed_when: "cmd_mgs_result.rc != 0 and ('not mounted' not in cmd_mgs_result.stderr) and ('mountpoint not found' not in cmd_mgs_result.stderr)"
+      changed_when: "cmd_mgs_result.rc == 0"
+
+    - name: "Remove MGS mountpoint"
+      file:
+        path: "{{ lustre_mount_prefix }}/MGS"
+        state: absent

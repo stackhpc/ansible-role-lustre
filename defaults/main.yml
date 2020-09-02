@@ -5,6 +5,27 @@
 # Accepted values here: 'server', 'client'
 lustre_install_type: 'server'
 lustre_version: '2.12.5'
+# WARNING: use this variable to control whether this role will attempt
+# to format devices for Lustre
+lustre_format_disks: false
+# Setting dryrun here to true, will cause all format commands to use the
+# --dryrun option, enabling you to run the command to check the execution
+# but not change anything
+lustre_format_dryrun: false
+# WARNING: this is an *extremely* dangerous variable and is only included
+# for convenient re-formatting of an *entire* filesystem. Otherwise
+# you should set force
+lustre_format_force: false
+# ldiskfs is the only filesystem supported by this role at the moment
+# but future versions will add 'zfs'
+lustre_backend_filesystem: 'ldiskfs'
+# Simple toggle for whether role should manage mounting device targets
+# as well. Disable if another mechanism is managing the targets (eg: pacemaker)
+lustre_mount_disks: false
+# Directory in which to mount lustre targets
+lustre_mount_prefix: '/mnt'
+# Determine state, controls which tasks are included, must be either 'present' or 'absent'
+lustre_state: 'present'
 
 # Optional Variables
 #=====================

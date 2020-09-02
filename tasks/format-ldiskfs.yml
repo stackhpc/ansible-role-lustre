@@ -1,0 +1,43 @@
+---
+
+- name: "Format MGS"
+  ldiskfs_filesystem:
+    target_type: 'mgs'
+    device: '{{ lustre_format_mgs.device }}'
+    fsname: '{{ lustre_format_mgs.fsname | default(lustre_fsname) }}'
+    service_nodes: '{{ lustre_format_mgs.service_nodes | default(omit) }}'
+    force: '{{ lustre_format_mgs.force | default(lustre_format_force) }}'
+    dryrun: '{{ lustre_format_mgs.dryrun | default(lustre_format_dryrun) }}'
+    mkfsoptions: '{{ lustre_format_mgs.mkfsoptions | default(omit) }}'
+  when:
+    - lustre_format_mgs is defined
+
+- name: "Format MDTs"
+  ldiskfs_filesystem:
+    target_type: 'mdt'
+    device: '{{ item.device | mandatory }}'
+    index: '{{ item.index | mandatory }}'
+    fsname: '{{ item.fsname | default(lustre_fsname) }}'
+    mgs_nodes: '{{ item.mgs_nodes | mandatory }}'
+    service_nodes: '{{ item.service_nodes | default(omit) }}'
+    force: '{{ item.force | default(lustre_format_force) }}'
+    dryrun: '{{ item.dryrun | default(lustre_format_dryrun) }}'
+    mkfsoptions: '{{ item.mkfsoptions | default(omit) }}'
+  when:
+    - lustre_format_mdts is defined
+  loop: "{{ lustre_format_mdts }}"
+
+- name: "Format OSTs"
+  ldiskfs_filesystem:
+    target_type: 'ost'
+    device: '{{ item.device | mandatory }}'
+    index: '{{ item.index | mandatory }}'
+    fsname: '{{ item.fsname | default(lustre_fsname) }}'
+    mgs_nodes: '{{ item.mgs_nodes | mandatory }}'
+    service_nodes: '{{ item.service_nodes | default(omit) }}'
+    force: '{{ item.force | default(lustre_format_force, omit) }}'
+    dryrun: '{{ item.dryrun | default(lustre_format_dryrun) }}'
+    mkfsoptions: '{{ item.mkfsoptions | default(omit) }}'
+  when:
+    - lustre_format_osts is defined
+  loop: "{{ lustre_format_osts }}"
