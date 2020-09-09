@@ -31,3 +31,18 @@ net:
       {% endfor %}
 {% endfor %}
 {% endif %}
+{% if lustre_lnet_lnetctl_routes is defined %}
+route:
+{% for network, routes in lustre_lnet_lnetctl_routes.items() %}
+  {% for route in routes %}
+    - net: {{ network }}
+      gateway: {{ route.gateway }}
+      {% if route.hop is defined %}
+      hop: {{ route.hop }}
+      {% endif %}
+      {% if route.priority is defined %}
+      priority: {{ route.priority }}
+      {% endif %}
+  {% endfor %}
+{% endfor %}
+{% endif %}
