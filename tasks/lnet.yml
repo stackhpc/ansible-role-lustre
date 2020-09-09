@@ -3,24 +3,18 @@
   template:
     src: "templates/modprobe.d/ko2iblnd.conf.j2"
     dest: "/etc/modprobe.d/ko2iblnd.conf"
-  notify:
-    - "Restart LNET"
 
 - name: "Manage /etc/modprobe.d/lnet.conf"
   template:
     src: "templates/modprobe.d/lnet.conf.j2"
     dest: "/etc/modprobe.d/lnet.conf"
   when: (lustre_lnet_module_networks is defined) or (lustre_lnet_module_routes is defined) or (lustre_lnet_module_options is defined)
-  notify:
-    - "Restart LNET"
 
 - name: "Manage /etc/lnet.conf"
   template:
     src: "templates/lnet.conf.j2"
     dest: "/etc/lnet.conf"
   when: (lustre_lnet_lnetctl_networks is defined)
-  notify:
-    - "Restart LNET"
 
 - name: "Ensure lnet service is started"
   service:
