@@ -41,3 +41,23 @@
   when:
     - lustre_format_osts is defined
   loop: "{{ lustre_format_osts }}"
+
+- name: "Configure MDT ldiskfs features"
+  ldiskfs_filesystem_tunables:
+    device: '{{ item.device | mandatory }}'
+    enable_project_quota: '{{ lustre_format_ldiskfs_enable_project_quota | default(omit) }}'
+    enable_wide_striping: '{{ lustre_format_ldiskfs_enable_wide_striping | default(omit) }}'
+    reserved_blocks_percentage: '{{ lustre_format_ldiskfs_reserved_blocks_percentage | default(None) | int or omit }}'
+  when:
+    - lustre_format_mdts is defined
+  loop: "{{ lustre_format_mdts }}"
+
+- name: "Configure OST ldiskfs features"
+  ldiskfs_filesystem_tunables:
+    device: '{{ item.device | mandatory }}'
+    enable_project_quota: '{{ lustre_format_ldiskfs_enable_project_quota | default(omit) }}'
+    enable_wide_striping: '{{ lustre_format_ldiskfs_enable_wide_striping | default(omit) }}'
+    reserved_blocks_percentage: '{{ lustre_format_ldiskfs_reserved_blocks_percentage | default(None) | int or omit }}'
+  when:
+    - lustre_format_osts is defined
+  loop: "{{ lustre_format_osts }}"

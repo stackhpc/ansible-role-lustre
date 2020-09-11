@@ -29,6 +29,11 @@ lustre_state: 'present'
 
 # Optional Variables
 #=====================
+# Configure ldiskfs tunables for filesystem targets
+#lustre_format_ldiskfs_enable_project_quota:
+#lustre_format_ldiskfs_enable_wide_striping:
+#lustre_format_ldiskfs_reserved_blocks_percentage:
+
 # Choose whether to install custom Yum repo to install mofed from
 lustre_manage_repo: true
 lustre_repo_name: 'lustre-{{ lustre_install_type }}'
