@@ -45,10 +45,10 @@ options:
     - If C(yes), allows to create new filesystem on devices that already has filesystem.
     type: bool
     default: 'no'
-  opts:
+  mkfsoptions:
     description:
     - List of format options for the backing fs. to be passed to mkfs command.
-    aliases: [mkfsoptions]
+    aliases: [mkfsopts]
   service_nodes:
     description:
     - List of NID(s) of all service partners.
@@ -139,7 +139,7 @@ class LDISKFS(object):
         raise NotImplementedError()
 
     def create_mgs(self):
-        opts = self.module.params.get('opts')
+        mkfsopts = self.module.params.get('mkfsoptions')
         dev = self.module.params.get('dev')
         dryrun = self.module.params.get('dryrun')
         force = self.module.params.get('force')
@@ -157,8 +157,8 @@ class LDISKFS(object):
             cmd.append(self.MKFS_FORCE_FLAGS)
         if servicenodes:
             cmd.append(" ".join("--servicenode=\'{}\'".format(nid) for nid in servicenodes))
-        if opts is not None:
-            cmd.append("--mkfsoptions \'{}\'".format(opts))
+        if mkfsopts is not None:
+            cmd.append("--mkfsoptions \'{}\'".format(mkfsopts))
         if dev is not None:
             cmd.append("\'{}\'".format(dev))
 
@@ -169,7 +169,7 @@ class LDISKFS(object):
         target_type = self.module.params.get('target_type')
         index = self.module.params.get('index')
         fsname = self.module.params.get('fsname')
-        opts = self.module.params.get('opts')
+        mkfsopts = self.module.params.get('mkfsoptions')
         dev = self.module.params.get('dev')
         dryrun = self.module.params.get('dryrun')
         force = self.module.params.get('force')
@@ -203,8 +203,8 @@ class LDISKFS(object):
         if servicenodes:
             cmd.append(" ".join("--servicenode=\'{}\'".format(nid) for nid in servicenodes))
 
-        if opts is not None:
-            cmd.append("--mkfsoptions \'{}\'".format(opts))
+        if mkfsopts is not None:
+            cmd.append("--mkfsoptions \'{}\'".format(mkfsopts))
 
         if dev is not None:
             cmd.append("\'{}\'".format(dev))
@@ -242,7 +242,7 @@ def main():
             dev=dict(required=True, aliases=['device']),
             fsname=dict(required=True),
             index=dict(type='int'),
-            opts=dict(aliases=['mkfsoptions']),
+            mkfsoptions=dict(aliases=['mkfsopts']),
             service_nodes=dict(type='list', aliases=['servicenodes']),
             mgs_nodes=dict(type='list', aliases=['mgsnodes']),
             dryrun=dict(type='bool', default=False),
