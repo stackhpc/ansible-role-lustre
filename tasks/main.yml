@@ -65,7 +65,6 @@
   register: result
   changed_when: "result.rc == 0 and ('LNET ready to unload' in result.stderr)"
   failed_when: false
-  ignore_errors: yes
   check_mode: no
   when:
     - lustre_state == 'absent'
