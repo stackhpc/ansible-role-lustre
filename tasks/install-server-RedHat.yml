@@ -18,3 +18,10 @@
     enablerepo: "{{ lustre_repo_name | default(omit) }}"
     state: present
   when: lustre_version is version('2.9.0', '<')
+
+- name: "Install Lustre HA resource agents packages"
+  yum:
+    name: "{{ lustre_ha_resource_agents_packages }}"
+    enablerepo: "{{ lustre_repo_name | default(omit) }}"
+    state: present
+  when: lustre_version is version('2.10.0', '>=')

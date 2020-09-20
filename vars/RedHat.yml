@@ -24,3 +24,6 @@ lustre_client_packages:
 lustre_client_legacy_packages:
   - 'lustre-client'
   - 'lustre-client-modules'
+
+lustre_ha_resource_agents_packages:
+  - 'lustre-resource-agents'
