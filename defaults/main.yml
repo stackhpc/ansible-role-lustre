@@ -83,7 +83,7 @@ lustre_lnet_ko2iblnd_opa_options:
 # EXAMPLE LNETCTL configuration options
 lustre_lnet_lnetctl_networks: null
 #  'o2ib2':
-#    '10.44.241.5':
+#    - ip: '10.44.241.5':
 #      interfaces:
 #         - 'ib0'
 #      tunables:

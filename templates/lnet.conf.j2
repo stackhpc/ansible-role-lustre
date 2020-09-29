@@ -10,21 +10,21 @@ net:
 {% for network, nids in lustre_lnet_lnetctl_networks.items() %}
     - net type: {{ network }}
       local NI(s):
-      {% for nid, nid_params in nids.items() %}
-        - nid: {{ nid }}@{{ network }}
+      {% for nid in nids %}
+        - nid: {{ nid.ip }}@{{ network }}
           interfaces:
-          {% for interface in nid_params.interfaces %}
+          {% for interface in nid.interfaces %}
             {{ loop.index0 }}: {{ interface }}
           {% endfor %}
-          {% if nid_params.tunables is defined %}
+          {% if nid.tunables is defined %}
           tunables:
-            {% for param_name, param_value in nid_params.tunables.items() %}
+            {% for param_name, param_value in nid.tunables.items() %}
               {{ param_name }}: {{ param_value }}
             {% endfor %}
           {% endif %}
-          {% if nid_params.lnd_tunables is defined %}
+          {% if nid.lnd_tunables is defined %}
           lnd tunables:
-            {% for param_name, param_value in nid_params.lnd_tunables.items() %}
+            {% for param_name, param_value in nid.lnd_tunables.items() %}
               {{ param_name }}: {{ param_value }}
             {% endfor %}
           {% endif %}
