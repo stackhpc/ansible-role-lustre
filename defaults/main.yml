@@ -26,6 +26,8 @@ lustre_mount_disks: false
 lustre_mount_prefix: '/mnt'
 # Determine state, controls which tasks are included, must be either 'present' or 'absent'
 lustre_state: 'present'
+# Enable routing in lnet configuration
+lustre_lnet_routing_enabled: false
 
 # Optional Variables
 #=====================

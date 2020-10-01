@@ -2,6 +2,11 @@
 - name: "Include OS-specific variables"
   include_vars: "{{ ansible_os_family }}.yml"
 
+- name: "Install PyYAML package"
+  package:
+    name: "{{ lustre_pyyaml_package }}"
+    state: present
+
 - name: "Include OS-specific package installation tasks"
   include_tasks: "install-server-{{ ansible_os_family }}.yml"
   when:

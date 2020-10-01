@@ -46,3 +46,13 @@ route:
   {% endfor %}
 {% endfor %}
 {% endif %}
+{% if lustre_lnet_routing_enabled %}
+routing:
+    - enable: 1
+  {% if lustre_lnet_routing_buffers is defined %}
+buffers:
+    tiny: {{ lustre_lnet_routing_buffers.tiny | default(2048) }}
+    small: {{ lustre_lnet_routing_buffers.small | default(16384) }}
+    large: {{ lustre_lnet_routing_buffers.large | default(1024) }}
+  {% endif %}
+{% endif %}

@@ -27,3 +27,5 @@ lustre_client_legacy_packages:
 
 lustre_ha_resource_agents_packages:
   - 'lustre-resource-agents'
+
+lustre_pyyaml_package: 'PyYAML'
