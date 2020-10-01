@@ -43,36 +43,7 @@
     - lustre_backend_filesystem == 'ldiskfs'
     - lustre_state == 'absent'
 
-- name: "Ensure lnet service is stopped"
-  service:
-    name: 'lnet'
-    state: 'stopped'
-    enabled: true
-  notify: "Unconfigure LNET"
-  when:
-    - lustre_state == 'absent'
-
-- name: "Ensure lnet service is started"
-  service:
-    name: 'lnet'
-    state: 'stopped'
-    enabled: true
-  when:
-    - lustre_state == 'absent'
-
-- name: "Run: lctl network unconfigure"
-  command: "lctl network unconfigure"
-  register: result
-  changed_when: "result.rc == 0 and ('LNET ready to unload' in result.stderr)"
-  failed_when: false
-  check_mode: no
-  when:
-    - lustre_state == 'absent'
-
-- name: "Run: lustre_rmmod"
-  command: "lustre_rmmod"
-  register: result
-  changed_when: "result.rc != 0"
-  check_mode: no
+- name: "Include Stop LNET tasks"
+  include_tasks: "stop-lnet.yml"
   when:
     - lustre_state == 'absent'
