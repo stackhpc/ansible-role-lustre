@@ -2,10 +2,13 @@
 - name: "Include OS-specific variables"
   include_vars: "{{ ansible_os_family }}.yml"
 
+# PyYAML is required for this role's modules to function, we force this
+# to be installed even in check-mode, since otherwise the modules will fail
 - name: "Install PyYAML package"
   package:
     name: "{{ lustre_pyyaml_package }}"
     state: present
+  check_mode: no
 
 - name: "Include OS-specific package installation tasks"
   include_tasks: "install-server-{{ ansible_os_family }}.yml"
