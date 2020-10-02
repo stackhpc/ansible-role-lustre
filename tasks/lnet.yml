@@ -28,3 +28,9 @@
     buffers: "{{ lustre_lnet_routing_buffers | default(omit) }}"
   when:
     - lustre_lnet_routing_enabled is defined
+
+- name: "Ensure lnet routes are configured correctly"
+  lnet_routes:
+    routes: "{{ lustre_lnet_lnetctl_routes }}"
+  when:
+    - lustre_lnet_lnetctl_routes is defined
