@@ -12,6 +12,15 @@
     state: present
   when: lustre_version is version('2.9.0', '>=')
 
+- name: "Install Lustre server debuginfo packages"
+  yum:
+    name: "{{ lustre_server_debuginfo_packages }}"
+    enablerepo: "{{ lustre_repo_name | default(omit) }}"
+    state: present
+  when:
+    - lustre_version is version('2.9.0', '>=')
+    - lustre_install_debuginfo | bool
+
 - name: "Install Lustre (legacy) server packages"
   yum:
     name: "{{ lustre_server_legacy_packages }}"

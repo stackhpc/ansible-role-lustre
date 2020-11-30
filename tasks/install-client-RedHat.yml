@@ -15,3 +15,12 @@
     enablerepo: "{{ lustre_repo_name | default(omit) }}"
     state: present
   when: lustre_version is version('2.9.0', '<')
+
+- name: "Install Lustre client debuginfo packages"
+  yum:
+    name: "{{ lustre_client_debuginfo_packages }}"
+    enablerepo: "{{ lustre_repo_name | default(omit) }}"
+    state: present
+  when:
+    - lustre_version is version('2.9.0', '>=')
+    - lustre_install_debuginfo | bool

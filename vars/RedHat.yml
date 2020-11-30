@@ -12,6 +12,9 @@ lustre_server_packages:
   - 'kmod-lustre-osd-ldiskfs'
   - 'lustre-osd-ldiskfs-mount'
 
+lustre_server_debuginfo_packages:
+  - 'lustre-debuginfo'
+
 lustre_server_legacy_packages:
   - 'lustre'
   - 'lustre-modules'
@@ -20,6 +23,9 @@ lustre_server_legacy_packages:
 lustre_client_packages:
   - 'lustre-client'
   - 'kmod-lustre-client'
+
+lustre_client_debuginfo_packages:
+  - 'lustre-client-debuginfo'
 
 lustre_client_legacy_packages:
   - 'lustre-client'

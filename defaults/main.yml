@@ -31,6 +31,7 @@ lustre_lnet_routing_enabled: false
 
 # Optional Variables
 #=====================
+lustre_install_debuginfo: true
 # Configure ldiskfs tunables for filesystem targets
 #lustre_format_ldiskfs_enable_project_quota:
 #lustre_format_ldiskfs_enable_wide_striping:
