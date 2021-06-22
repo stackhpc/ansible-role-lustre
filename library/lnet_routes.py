@@ -106,7 +106,14 @@ def main():
                        exception=YAML_IMP_ERR)
 
     # Store path to lnetctl binary
-    lnetctl_cmd = module.get_bin_path('lnetctl', required=True)
+    lnetctl_cmd = module.get_bin_path('lnetctl')
+    if not lnetctl_cmd:
+      if module.check_mode:
+        module.warn("'lnetctl' executable not found. Cannot configure routes")
+        module.exit_json(**result)
+      else:
+        module.fail_json(changed=False, msg="'lnetctl' executable not found.")
+
 
     # 'current' and 'wanted' are dictionaries containing the current set
     # of routes, and the wanted set of routes respectively.

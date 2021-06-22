@@ -64,7 +64,14 @@ def main():
     wanted['enable_routing'] = enable_routing
 
     # Populate both `got` and `wanted`.
-    lnetctl_cmd = module.get_bin_path('lnetctl', required=True)
+    lnetctl_cmd = module.get_bin_path('lnetctl')
+    if not lnetctl_cmd:
+      if module.check_mode:
+        module.warn("'lnetctl' executable not found. Cannot configure routing")
+        module.exit_json(**result)
+      else:
+        module.fail_json(changed=False, msg="'lnetctl' executable not found.")
+
     # Run lnetctl to get current routing params
     rc, raw_routing_config, err = module.run_command("{cmd} routing show".format(cmd=lnetctl_cmd))
 

@@ -73,7 +73,11 @@ def main():
     rc, raw_tunefs_params, err = module.run_command("{cmd} -l {dev}".format(cmd=tune2fs_cmd, dev=blkdev))
 
     if rc != 0:
-        module.fail_json(changed=False, msg="Failed to get current parameters from device: {}. Output: {}".format(blkdev, err))
+        if module.check_mode:
+            module.warn("Failed to get current parameters from device: {}. Output: {}".format(blkdev, err))
+            module.exit_json(**result)
+        else:
+            module.fail_json(changed=False, msg="Failed to get current parameters from device: {}. Output: {}".format(blkdev, err))
 
     match = re.search(r"^Filesystem features:\s+(?P<features>.*)$", raw_tunefs_params, re.MULTILINE)
     if not match:
