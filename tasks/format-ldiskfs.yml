@@ -37,6 +37,7 @@
     service_nodes: '{{ item.service_nodes | default(omit) }}'
     force: '{{ item.force | default(lustre_format_force, omit) }}'
     dryrun: '{{ item.dryrun | default(lustre_format_dryrun) }}'
+    replace: '{{ item.replace | default(omit) }}'
     mkfsoptions: '{{ item.mkfsoptions | default(omit) }}'
   when:
     - lustre_format_osts is defined

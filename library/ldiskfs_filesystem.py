@@ -40,6 +40,11 @@ options:
     - If C(yes), only print what would be done, does not affect the disk
     type: bool
     default: 'no'
+  replace:
+    description:
+    - If C(yes), allows device to be replaced
+    type: bool
+    default: 'no'
   force:
     description:
     - If C(yes), allows to create new filesystem on devices that already has filesystem.
@@ -173,6 +178,7 @@ class LDISKFS(object):
         dev = self.module.params.get('dev')
         dryrun = self.module.params.get('dryrun')
         force = self.module.params.get('force')
+        replace = self.module.params.get('replace')
         mgsnodes = self.module.params.get('mgs_nodes')
         servicenodes = self.module.params.get('service_nodes')
 
@@ -186,6 +192,8 @@ class LDISKFS(object):
             cmd.append("--dryrun")
         if force:
             cmd.append(self.MKFS_FORCE_FLAGS)
+        if replace:
+            cmd.append("--replace")
 
         if fsname is not None:
             cmd.append("--fsname {}".format(fsname))
@@ -247,6 +255,7 @@ def main():
             mgs_nodes=dict(type='list', aliases=['mgsnodes']),
             dryrun=dict(type='bool', default=False),
             force=dict(type='bool', default=False),
+            replace=dict(type='bool', default=False),
             resizefs=dict(type='bool', default=False),
         ),
         supports_check_mode=True,
@@ -257,6 +266,7 @@ def main():
     index = module.params.get('index')
     dev = module.params.get('dev')
     force = module.params.get('force')
+    replace = module.params.get('replace')
     resizefs = module.params.get('resizefs')
 
     changed = False
