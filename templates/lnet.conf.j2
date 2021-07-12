@@ -56,3 +56,9 @@ buffers:
     large: {{ lustre_lnet_routing_buffers.large | default(1024) }}
   {% endif %}
 {% endif %}
+{% if lustre_lnet_lnetctl_globals is defined %}
+global:
+{% for param, value in lustre_lnet_lnetctl_globals.items() %}
+    {{ param }}: {{ value }}
+{% endfor %}
+{% endif %}
