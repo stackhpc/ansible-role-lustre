@@ -15,22 +15,3 @@
     src: "templates/lnet.conf.j2"
     dest: "/etc/lnet.conf"
   when: (lustre_lnet_lnetctl_networks is defined)
-
-- name: "Ensure lnet service is started"
-  service:
-    name: 'lnet'
-    state: 'started'
-    enabled: true
-
-- name: "Ensure lnet routing parameters are configured correctly"
-  lnet_routing:
-    enable: "{{ lustre_lnet_routing_enabled }}"
-    buffers: "{{ lustre_lnet_routing_buffers | default(omit) }}"
-  when:
-    - lustre_lnet_routing_enabled is defined
-
-- name: "Ensure lnet routes are configured correctly"
-  lnet_routes:
-    routes: "{{ lustre_lnet_lnetctl_routes }}"
-  when:
-    - lustre_lnet_lnetctl_routes is defined
