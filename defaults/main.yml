@@ -2,7 +2,7 @@
 
 # MANDATORY Variables
 #=====================
-# Accepted values here: 'server', 'client'
+# Accepted values here: 'server', 'client', 'patchless-ldiskfs-server'
 lustre_install_type: 'server'
 lustre_version: '2.12.7'
 # WARNING: use this variable to control whether this role will attempt

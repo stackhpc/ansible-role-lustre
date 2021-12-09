@@ -13,7 +13,7 @@
 - name: "Include OS-specific package installation tasks"
   include_tasks: "install-server-{{ ansible_os_family }}.yml"
   when:
-    - lustre_install_type == 'server'
+    - "'server' in lustre_install_type"
     - lustre_state == 'present'
 
 - name: "Include OS-specific package client installation tasks"
@@ -30,7 +30,7 @@
 - name: "Include LDISKFS formatting tasks"
   include_tasks: "format-ldiskfs.yml"
   when:
-    - lustre_install_type == 'server'
+    - "'server' in lustre_install_type"
     - lustre_format_disks | bool
     - lustre_backend_filesystem == 'ldiskfs'
     - lustre_state == 'present'
@@ -38,7 +38,7 @@
 - name: "Include LDISKFS filesystem mount tasks"
   include_tasks: "mount-ldiskfs.yml"
   when:
-    - lustre_install_type == 'server'
+    - "'server' in lustre_install_type"
     - lustre_mount_disks | bool
     - lustre_backend_filesystem == 'ldiskfs'
     - lustre_state == 'present'
@@ -46,7 +46,7 @@
 - name: "Include LDISKFS filesystem unmount tasks"
   include_tasks: "unmount-ldiskfs.yml"
   when:
-    - lustre_install_type == 'server'
+    - "'server' in lustre_install_type"
     - lustre_mount_disks | bool
     - lustre_backend_filesystem == 'ldiskfs'
     - lustre_state == 'absent'
