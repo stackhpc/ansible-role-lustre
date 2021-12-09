@@ -69,6 +69,20 @@ lustre_lnet_ko2iblnd_opa_options:
   fmr_cache: '1'
   conns_per_peer: '4'
 
+# LDISKFS variables - REQUIRED when lustre_format_disks = True
+lustre_fsname: lustre
+# See tasks/format-ldiskfs.yml for details, minimal requirements are:
+# lustre_format_mgs:
+#   device: # device path
+# lustre_format_mdts:
+#   device: # device path
+#   index: # a 0-based index
+#   mgs_nodes: # mgs NID
+# lustre_format_osts:
+#   device: # device path
+#   index: # a 0-based index
+#   mgs_nodes: # mgs NID
+
 # EXAMPLE legacy lnet module options
 #lustre_lnet_module_networks:
 #  - 'o2ib0(ib0)'
