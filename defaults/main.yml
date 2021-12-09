@@ -37,10 +37,10 @@ lustre_install_debuginfo: true
 #lustre_format_ldiskfs_enable_wide_striping:
 #lustre_format_ldiskfs_reserved_blocks_percentage:
 
-# Choose whether to install custom Yum repo to install mofed from
+# Define yum repo to install lustre packages from
 lustre_manage_repo: true
 lustre_repo_name: 'lustre-{{ lustre_install_type }}'
-lustre_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}/server"
+lustre_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}"
 lustre_repo_description: "Lustre Server - Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_version }} - {{ ansible_architecture }}"
 lustre_repo_enabled: true
 lustre_repo_gpgcheck: false

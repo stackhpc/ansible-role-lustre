@@ -6,7 +6,7 @@
       yum_repository:
         name: "{{ lustre_repo_name }}"
         description: "{{ lustre_repo_description }}"
-        baseurl: "{{ lustre_repo_baseurl }}"
+        baseurl: "{{ lustre_repo_baseurl }}/{{ lustre_install_type }}"
         gpgcheck: "{{ lustre_repo_gpgcheck | default('no') }}"
         gpgkey: "{{ lustre_repo_gpgkey | default(omit) }}"
         enabled: "{{ lustre_repo_enabled | default('no') }}"
