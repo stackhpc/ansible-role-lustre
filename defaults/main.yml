@@ -4,7 +4,7 @@
 #=====================
 # Accepted values here: 'server', 'client'
 lustre_install_type: 'server'
-lustre_version: '2.12.5'
+lustre_version: '2.12.7'
 # WARNING: use this variable to control whether this role will attempt
 # to format devices for Lustre
 lustre_format_disks: false
