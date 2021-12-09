@@ -15,11 +15,12 @@
     src: "templates/lnet.conf.j2"
     dest: "/etc/lnet.conf"
   when: (lustre_lnet_lnetctl_networks is defined)
+  register: lustre_lnet_conf
 
 - name: "Ensure lnet service is started"
   service:
     name: 'lnet'
-    state: 'started'
+    state: "{{ 'restarted' if lustre_lnet_conf.changed else 'started' }}"
     enabled: true
 
 - name: "Ensure lnet routing parameters are configured correctly"
