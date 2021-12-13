@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 """ Control lustre nodemap configuration.
 
     Usage:
@@ -31,15 +31,29 @@
     TODO: note restrictions on NID ranges for import?
 """
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+DOCUMENTATION = r'''
+TODO: complete docs
+'''
+
+EXAMPLES = r'''
+TODO: complete docs
+'''
+
+RETURN = r'''
+TODO: complete docs
+'''
+
+from ansible.module_utils.basic import AnsibleModule
+import subprocess, pprint, sys, re, ast, difflib, datetime, os,  socket, struct
+
 # internal canonical form for nodemap config is:
 # - keys in sorted order, where consistency is required (note pyyaml outputs sorted keys anyway)
 # - lists are sorted (lusstre treats them as unordered)
 # - simple values (i.e. not dicts or lists) are either str or int - latter needs to be explicitly converted
 
-from __future__ import print_function
-__version__ = "0.0"
-
-import subprocess, pprint, sys, re, ast, difflib, datetime, os,  socket, struct
 
 # pyyaml:
 from yaml import load, dump # TODO: use safe_load
@@ -354,7 +368,31 @@ def changes_to_yaml(changes):
 def exit_bad_cli():
     exit('ERROR: invalid command line.\n\n%s\n' % __doc__.split('\n\n')[1])
 
-def main():
+def run_module():
+    module_args = dict(
+        src = dict(type='str', required=True)
+    )
+
+    result = dict(
+        changed=False,
+        diff='',
+    )
+
+    module = AnsibleModule(
+        argument_spec=module_args,
+        supports_check_mode=True,
+    )
+
+    if module.check_mode:
+        module.exit_json(**result) # TODO
+    
+    nodemap_a = load_live()
+    nodemap_b = load_from_file(module.params['src'])
+    changes = diff(nodemap_a, nodemap_b)
+    result['diff'] = changes_to_yaml(changes)
+    make_changes(changes)
+
+def cli():
 
     if len(sys.argv) < 2:
         exit_bad_cli()
@@ -386,4 +424,4 @@ def main():
         exit_bad_cli()
     
 if __name__ == '__main__':
-    main()
+    run_module()
