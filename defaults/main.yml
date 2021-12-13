@@ -4,7 +4,7 @@
 #=====================
 # Accepted values here: 'server', 'client'
 lustre_install_type: 'server'
-lustre_version: '2.12.5'
+lustre_version: '2.12.7'
 # WARNING: use this variable to control whether this role will attempt
 # to format devices for Lustre
 lustre_format_disks: false
@@ -37,10 +37,10 @@ lustre_install_debuginfo: true
 #lustre_format_ldiskfs_enable_wide_striping:
 #lustre_format_ldiskfs_reserved_blocks_percentage:
 
-# Choose whether to install custom Yum repo to install mofed from
+# Define yum repo to install lustre packages from
 lustre_manage_repo: true
 lustre_repo_name: 'lustre-{{ lustre_install_type }}'
-lustre_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}/server"
+lustre_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}"
 lustre_repo_description: "Lustre Server - Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_version }} - {{ ansible_architecture }}"
 lustre_repo_enabled: true
 lustre_repo_gpgcheck: false
@@ -68,6 +68,20 @@ lustre_lnet_ko2iblnd_opa_options:
   fmr_flush_trigger: '512'
   fmr_cache: '1'
   conns_per_peer: '4'
+
+# LDISKFS variables - REQUIRED when lustre_format_disks = True
+lustre_fsname: lustre
+# See tasks/format-ldiskfs.yml for details, minimal requirements are:
+# lustre_format_mgs:
+#   device: # device path
+# lustre_format_mdts:
+#   device: # device path
+#   index: # a 0-based index
+#   mgs_nodes: # mgs NID
+# lustre_format_osts:
+#   device: # device path
+#   index: # a 0-based index
+#   mgs_nodes: # mgs NID
 
 # EXAMPLE legacy lnet module options
 #lustre_lnet_module_networks:
