@@ -20,10 +20,12 @@
   include_tasks: "install-client-{{ ansible_os_family }}.yml"
   when:
     - lustre_install_type == 'client'
-    - lustre_state == 'present'
 
 - name: "Include LNET configuration tasks"
-  include_tasks: "lnet.yml"
+  include_tasks: "configure-lnet.yml"
+
+- name: "Include Start LNET tasks"
+  include_tasks: "start-lnet.yml"
   when:
     - lustre_state == 'present'
 
