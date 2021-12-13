@@ -75,22 +75,18 @@ NODEMAP_SET_ADMIN = "lctl nodemap_modify --name {nodemap} --property admin --val
 NODEMAP_SET_TRUSTED = "lctl nodemap_modify --name {nodemap} --property trusted --value {new}"
 NODEMAP_IGNORE_PARAMS = 'audit_mode exports id map_mode sepol'.split()
 
-def cmd(cmdline):
+def cmd(module, cmdline):
     """ Run a space-separated command and return its stdout/stderr.
 
         Uses shell, blocks until subprocess returns.
     """
-    proc = subprocess.Popen(cmdline, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE) # need shell else lctl not found
-    stdout, stderr = proc.communicate()
+    rc, stdout, stderr = module.run_command(cmdline, use_unsafe_shell=True) # need shell else lctl not found TODO: FIXME
     return stdout, stderr
 
-def call(cmdline):
-    proc = subprocess.Popen(cmdline, shell=True) # need shell else lctl not found
-    proc.wait()
-    if proc.returncode != 0:
-        exit('ERROR: %r returned %i' % (cmdline, proc.returncode))
-
-def lctl_get_param(item, output):
+def call(module, cmdline):
+    rc, stdout, stderr = module.run_command(cmdline, use_unsafe_shell=True, check_rc=True) # need shell else lctl not found TODO: FIXME
+    
+def lctl_get_param(module, item, output):
     """ Get a lustre parameter.
 
         A wrapper for `lctl get_param`.
@@ -103,7 +99,7 @@ def lctl_get_param(item, output):
         Dict keys are always strs. The structure of this (i.e. the nested keys) follows the path-line structure of lctl
         parameters. The same dict may be passed to this function multiple times to build up results from several parameters.
     """
-    s, e = cmd("lctl get_param '{item}'".format(item=item)) # need quoting around `item` to avoid shell expansion of ".*" !
+    s, e = cmd(module, "lctl get_param '{item}'".format(item=item)) # need quoting around `item` to avoid shell expansion of ".*" !
     lines = s.strip().split('\n')
     accumulate = []
     for line in lines:
@@ -141,18 +137,18 @@ def lctl_get_param(item, output):
                 accumulate.append(line)
     return output
     
-def load_live():
+def load_live(module):
     """ Load live nodemap information.
     
         Returns a nested datastructure in normalised form.
     """
     output = {}
     lctl_get_param("nodemap.*", output)
-    s, e = cmd("lctl nodemap_info",) # need quoting to avoid shell expansion!
+    s, e = cmd(module, "lctl nodemap_info",) # need quoting to avoid shell expansion!
     nodemaps = [n.split('.')[-1] for n in s.strip().split('\n')]
     #print(nodemaps)
     for nmap in nodemaps:
-        lctl_get_param("nodemap.{nmap}.*".format(nmap=nmap), output)
+        lctl_get_param(module, "nodemap.{nmap}.*".format(nmap=nmap), output)
     to_int(output)
     deep_sort(output)
 
@@ -295,7 +291,7 @@ def range_to_pattern(start_nid, end_nid):
         # NB stil don't catch case described in docstring!
     return '.'.join(output) + '@%s' % netname1
 
-def make_changes(changes, func=call):
+def make_changes(module, changes):
     """ Make changes to the live nodemap config as output from diff().
     
         Pass a print function as `func` to output the commands which would normally be run.
@@ -314,29 +310,29 @@ def make_changes(changes, func=call):
         if len(keypath) == 2:
             if nodemap == 'active': # not really a nodemap
                 if action == 'ADD': # don't care about what it was
-                    func(NODEMAP_ACTIVATE.format(new=value))
+                    call(module, NODEMAP_ACTIVATE.format(new=value))
             else: # nodemap add/delete
-                func(NODEMAP_EXISTS.format(name=nodemap, mode=action.lower()))
+                call(module, NODEMAP_EXISTS.format(name=nodemap, mode=action.lower()))
                 if action == 'DEL':
                     deleted_nodemaps.append(nodemap)
         else:
             if nodemap not in deleted_nodemaps: # can't changed properties if we've deleted it!
                 param = keypath[2]
                 if param == 'fileset' and action == 'ADD': # can ignore delete on these, just overwrite
-                    func(NODEMAP_SET_FILESET.format(nodemap=nodemap, new=value))
+                    call(module, NODEMAP_SET_FILESET.format(nodemap=nodemap, new=value))
                 elif param in NODEMAP_MODIFY_PARAMS and action == 'ADD':
-                    func(NODEMAP_MODIFY.format(nodemap=nodemap, property=param, new=value))
+                    call(module, NODEMAP_MODIFY.format(nodemap=nodemap, property=param, new=value))
                 elif param == 'admin_nodemap' and action == 'ADD':
-                    func(NODEMAP_SET_ADMIN.format(nodemap=nodemap, new=value))
+                    call(module, NODEMAP_SET_ADMIN.format(nodemap=nodemap, new=value))
                 elif param == 'trusted_nodemap' and action == 'ADD':
-                    func(NODEMAP_SET_TRUSTED.format(nodemap=nodemap, new=value))
+                    call(module, NODEMAP_SET_TRUSTED.format(nodemap=nodemap, new=value))
                 elif param == 'idmap': # don't ignore delete as need to get rid of old ones
                     for idmap in value:
-                        func(NODEMAP_CHANGE_IDMAP.format(mode=action.lower(), nodemap=nodemap, **idmap))
+                        call(module, NODEMAP_CHANGE_IDMAP.format(mode=action.lower(), nodemap=nodemap, **idmap))
                 elif param == 'ranges': # again need to delete old ones
                     for rng in value:
                         pattern = range_to_pattern(rng['start_nid'], rng['end_nid'])
-                        func(NODEMAP_CHANGE_RANGE.format(mode=action.lower(), nodemap=nodemap, nid='{pattern}'.format(pattern=pattern)))
+                        call(module, NODEMAP_CHANGE_RANGE.format(mode=action.lower(), nodemap=nodemap, nid='{pattern}'.format(pattern=pattern)))
 
 def changes_to_yaml(changes):
     """ Return a multi-line string of pseudo-yaml from a nested dict produced by `diff()`.
@@ -365,8 +361,8 @@ def changes_to_yaml(changes):
         curr_keypath = keypath
     return '\n'.join(lines)
             
-def exit_bad_cli():
-    exit('ERROR: invalid command line.\n\n%s\n' % __doc__.split('\n\n')[1])
+# def exit_bad_cli():
+#     exit('ERROR: invalid command line.\n\n%s\n' % __doc__.split('\n\n')[1])
 
 def run_module():
     module_args = dict(
@@ -386,42 +382,42 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result) # TODO
     
-    nodemap_a = load_live()
+    nodemap_a = load_live(module)
     nodemap_b = load_from_file(module.params['src'])
     changes = diff(nodemap_a, nodemap_b)
     result['diff'] = changes_to_yaml(changes)
-    make_changes(changes)
+    make_changes(module, changes)
 
-def cli():
+# def cli():
 
-    if len(sys.argv) < 2:
-        exit_bad_cli()
-    elif sys.argv[1] == 'export' and len(sys.argv) == 2:
-        live_nodemap = load_live()
-        live_yaml = dump(live_nodemap, Dumper=Dumper, default_flow_style=False)
-        print(live_yaml)
-    elif sys.argv[1] == 'diff' and len(sys.argv) in (3, 4):
-        nodemap_a = load_live() if len(sys.argv) == 3 else load_from_file(sys.argv[2])
-        nodemap_b = load_from_file(sys.argv[-1])
-        changes = diff(nodemap_a, nodemap_b)
-        print(changes_to_yaml(changes))
-    elif sys.argv[1] == 'import' and len(sys.argv) in (3, 4): # NB 4-arg form only for testing!!
-        nodemap_a = load_live() if len(sys.argv) == 3 else load_from_file(sys.argv[2])
-        nodemap_b = load_from_file(sys.argv[-1])
-        changes = diff(nodemap_a, nodemap_b)
-        print(changes_to_yaml(changes))
-        if len(sys.argv) == 4:
-            print('----')
-            make_changes(changes, print)
-        else:
-            make_changes(changes)
+#     if len(sys.argv) < 2:
+#         exit_bad_cli()
+#     elif sys.argv[1] == 'export' and len(sys.argv) == 2:
+#         live_nodemap = load_live()
+#         live_yaml = dump(live_nodemap, Dumper=Dumper, default_flow_style=False)
+#         print(live_yaml)
+#     elif sys.argv[1] == 'diff' and len(sys.argv) in (3, 4):
+#         nodemap_a = load_live() if len(sys.argv) == 3 else load_from_file(sys.argv[2])
+#         nodemap_b = load_from_file(sys.argv[-1])
+#         changes = diff(nodemap_a, nodemap_b)
+#         print(changes_to_yaml(changes))
+#     elif sys.argv[1] == 'import' and len(sys.argv) in (3, 4): # NB 4-arg form only for testing!!
+#         nodemap_a = load_live() if len(sys.argv) == 3 else load_from_file(sys.argv[2])
+#         nodemap_b = load_from_file(sys.argv[-1])
+#         changes = diff(nodemap_a, nodemap_b)
+#         print(changes_to_yaml(changes))
+#         if len(sys.argv) == 4:
+#             print('----')
+#             make_changes(changes, print)
+#         else:
+#             make_changes(changes)
     
-    elif sys.argv[1] == '--version' and len(sys.argv) == 2:
-        print(__version__)
-    elif sys.argv[1] == '--help' and len(sys.argv) == 2:
-        print(__doc__)
-    else:
-        exit_bad_cli()
+    # elif sys.argv[1] == '--version' and len(sys.argv) == 2:
+    #     print(__version__)
+    # elif sys.argv[1] == '--help' and len(sys.argv) == 2:
+    #     print(__doc__)
+    # else:
+    #     exit_bad_cli()
     
 if __name__ == '__main__':
     run_module()
