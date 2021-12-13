@@ -1,0 +1,20 @@
+---
+- name: Create lustre config directory
+  file:
+    path: /etc/lustre
+    owner: root
+    state: directory
+
+- name: Create nodemap config
+  template:
+    dest: /etc/lustre/nodemaps.yml
+    src: templates/nodemaps.j2
+
+- name: Apply nodemap config
+  nodemap:
+    src: /etc/lustre/nodemaps.yml
+  register: nodemap_import
+
+- name: Debug
+  debug:
+    msg: "{{ nodemap_import.diff }}"

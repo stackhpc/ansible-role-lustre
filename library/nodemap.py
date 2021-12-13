@@ -44,6 +44,8 @@ TODO: complete docs
 
 RETURN = r'''
 TODO: complete docs
+
+NB: Use ANSIBLE_STDOUT_CALLBACK=debug to get better output from this
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -143,7 +145,7 @@ def load_live(module):
         Returns a nested datastructure in normalised form.
     """
     output = {}
-    lctl_get_param("nodemap.*", output)
+    lctl_get_param(module, "nodemap.*", output)
     s, e = cmd(module, "lctl nodemap_info",) # need quoting to avoid shell expansion!
     nodemaps = [n.split('.')[-1] for n in s.strip().split('\n')]
     #print(nodemaps)
@@ -386,7 +388,10 @@ def run_module():
     nodemap_b = load_from_file(module.params['src'])
     changes = diff(nodemap_a, nodemap_b)
     result['diff'] = changes_to_yaml(changes)
-    make_changes(module, changes)
+    result['changed'] = bool(changes)
+    if changes:
+        make_changes(module, changes)
+    module.exit_json(**result)
 
 # def cli():
 

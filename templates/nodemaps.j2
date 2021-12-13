@@ -8,26 +8,28 @@ nodemap:
     squash_gid: 99
     squash_uid: 99
     trusted_nodemap: 0
-{% for client in groups['lustre_client'] %}
-  {{ client | replace('-', '_') }}:
-    admin_nodemap: {{ hostvars[client].lustre.admin|int }}
-    audit_mode: 1
-    deny_unknown: {{ hostvars[client].lustre.deny_unknown|int }}
-    fileset: '{{ hostvars[client].lustre.fileset}}'
-{% if hostvars[client].lustre.idmap | length == 0 %}
+{% for nodemap in lustre_nodemaps | default([]) %}
+  {{ nodemap.name }}:
+    admin_nodemap: {{ nodemap.admin_nodemap | default(false) | int }}
+    audit_mode: {{ nodemap.admin_nodemap | default(true) | int }}
+    deny_unknown: {{ nodemap.deny_unknown | default(false) | int }}
+    fileset: '{{ nodemap.fileset | default('') }}'
+{% if nodemap.idmaps | default([]) | length == 0 %}
     idmap: []
 {% else %}
     idmap:
-{% for idmap in hostvars[client].lustre.idmap %}
-    - client_id: {{ idmap[1] }}
-      fs_id: {{ idmap[2] }}
-      idtype: {{ idmap[0] }}
+{% for idmap in nodemap.idmaps | default([]) %}
+    - client_id: {{ idmap.client_id }}
+      fs_id: {{ idmap.fs_id }}
+      idtype: {{ idmap.idtype }}
 {% endfor %}
 {% endif %}
     ranges:
-    - end_nid: {{ hostvars[client]['ansible_host'] }}@{{ hostvars[client]['lnet_eth0_net_type'] }}
-      start_nid: {{ hostvars[client]['ansible_host'] }}@{{ hostvars[client]['lnet_eth0_net_type'] }}
-    squash_gid: {{ hostvars[client].lustre.squash_gid }}
-    squash_uid: {{ hostvars[client].lustre.squash_uid }}
-    trusted_nodemap: {{ hostvars[client].lustre.trusted|int }}
+{% for nid_range in nodemap.ranges | default([]) %}
+    - start_nid: {{ nid_range.start_nid }}
+      end_nid: {{ nid_range.end_nid }}
+{% endfor %}
+    squash_gid: {{ nodemap.squash_gid | default(99) }}
+    squash_uid: {{ nodemap.squash_uid | default(99) }}
+    trusted_nodemap: {{ nodemap.trusted_nodemap | default(false) | int }}
 {% endfor %}

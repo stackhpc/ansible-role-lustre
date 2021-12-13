@@ -69,7 +69,9 @@ lustre_lnet_ko2iblnd_opa_options:
   fmr_cache: '1'
   conns_per_peer: '4'
 
-# LDISKFS variables - REQUIRED when lustre_format_disks = True
+# LDISKFS Variables 
+#==================
+# These are REQUIRED when lustre_format_disks = True
 lustre_fsname: lustre
 # See tasks/format-ldiskfs.yml for details, minimal requirements are:
 # lustre_format_mgs:
@@ -117,3 +119,25 @@ lustre_fsname: lustre
 #   - gateway: '10.44.241.161@o2ib2'
 #lustre_lnet_lnetctl_globals:
 # 'discovery': '0'
+
+# Nodemap Variables
+#==================
+# Basically as for http://doc.lustre.org/lustre_manual.xhtml#lustrenodemap
+# For choices, [value] shows default
+# lustre_nodemaps: []
+#   name:
+#   admin_nodemap: true/[false]
+#   audit_mode: [true]/false
+#   deny_unknown: true/[false]
+#   fileset: ''
+#   idmaps: []
+      # - client_id:
+      #   fs_id:
+      #   idtype:
+#   ranges: []
+      #   start_nid:
+      # - end_nid:
+# squash_gid: 99
+# squash_uid: 99
+# trusted_nodemap: true/[false]
+
