@@ -124,7 +124,7 @@ lustre_fsname: lustre
 #==================
 # A list of mappings defining nodemaps. Keys/values are ansible-ised version of nodemap parameters, see http://doc.lustre.org/lustre_manual.xhtml#lustrenodemap, with defaults as follows:
 # lustre_nodemaps: []
-#   name: <str, required>
+#   name: <str, required> # NB: This can be at most 16 characters (undocumented Lustre restriction).
 #   admin_nodemap: false
 #   audit_mode: true
 #   deny_unknown: false
