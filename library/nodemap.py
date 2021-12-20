@@ -1,51 +1,39 @@
 #!/usr/bin/python
-""" Control lustre nodemap configuration.
-
-    Usage:
-        nodemap.py export
-        nodemap.py diff FILE_A [FILE_B]
-        nodemap.py import FILE
-        nodemap.py --help
-        nodemap.py --version
-
-    NB: Root privileges will be required.
-
-    The first form outputs the live lustre nodemap configuration to stdout.
-    The second form outputs the changes needed to alter the live nodemap configuration to that defined in the file, or else from config A to config B.
-    The third form imports the given configuration, and outputs the changes made to the live configuration.
-    
-    Both export output and configuration files are YAML, with:
-    - Simple values (i.e. which aren't themselves mappings or lists) being only ints or strings.
-    - Lists and mappings sorted to ensure predictable output.
-
-    Output from diff/import is similar but with lines prefixed with "<" for deletion and ">" for addition.
-
-    This tool supports all nodemap parameters which can be set using the lustre command-line tools, except for `sepol` and `audit_mode`.
-    
-    Note: For testing, this also supports usage:
-        nodemap.py import FILE_A FILE_B
-    In this case it will display (but not actually run) the commands needed to change the config from FILE_A to FILE_B.
-
-    TODO: Improve (YAML) diff output for [] e.g. ranges.
-    TODO: provide stdin for import?
-    TODO: note restrictions on NID ranges for import?
-"""
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = r'''
-TODO: complete docs
+---
+module: nodemap
+
+short_description: Configure Lustre nodemaps
+
+description: Add, delete or modify existing Lustre nodemaps to match those defined in a yaml-format file. This should be run on the MGS and requires elevated privileges. It supports all nodemap parameters which can be set using the lustre command-line tools, except for `sepol` and `audit_mode`.
+
+options:
+    src:
+        description: Path to yaml-format file containing nodemaps. See `templates/nodemaps.j2` for an example.
+        required: true
+        type: str
+
 '''
 
 EXAMPLES = r'''
-TODO: complete docs
+- name: Apply nodemap config
+  nodemap:
+    src: /etc/lustre/nodemaps.yml
+  register: nodemap_import
+- name: Show nodemap changes made
+  debug:
+    msg: "{{ nodemap_import.diff }}"
 '''
 
 RETURN = r'''
-TODO: complete docs
-
-NB: Use ANSIBLE_STDOUT_CALLBACK=debug to get better output from this
+diff:
+    description: The changes made to apply the nodemaps specified by `src`. Format is similar to `src` but with lines prefixed with "<" for deletion and ">" for addition. Lists and mappings are sorted for predicability. NB Use ANSIBLE_STDOUT_CALLBACK=debug to get more readable formatting.
+    type: dict
+    returned: always
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -294,12 +282,9 @@ def range_to_pattern(start_nid, end_nid):
     return '.'.join(output) + '@%s' % netname1
 
 def make_changes(module, changes):
-    """ Make changes to the live nodemap config as output from diff().
-    
-        Pass a print function as `func` to output the commands which would normally be run.
-    """
+    """ Make changes to the live nodemap config as output from diff(). """
 
-    # Unlike other diff functions this is more nodemap-specific, e.g. knows that when nodemap don't need to recurse into parameters, just delete the whole thing.
+    # This is nodemap-specific, e.g. knows that when a nodemap is empty it doesn't need to recurse into parameters, can just delete the entire nodemap.
 
     deleted_nodemaps = []
     for (keypath, action, value) in changes:
@@ -363,8 +348,6 @@ def changes_to_yaml(changes):
         curr_keypath = keypath
     return '\n'.join(lines)
             
-# def exit_bad_cli():
-#     exit('ERROR: invalid command line.\n\n%s\n' % __doc__.split('\n\n')[1])
 
 def run_module():
     module_args = dict(
@@ -382,7 +365,7 @@ def run_module():
     )
 
     if module.check_mode:
-        module.exit_json(**result) # TODO
+        module.exit_json(**result) # TODO:
     
     nodemap_a = load_live(module)
     nodemap_b = load_from_file(module.params['src'])
