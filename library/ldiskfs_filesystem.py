@@ -276,7 +276,7 @@ def main():
     dev = Device(module, dev)
 
     cmd = module.get_bin_path('blkid', required=True)
-    rc, raw_fs, err = module.run_command("%s -c /dev/null -o value -s TYPE %s" % (cmd, dev)) # raw_fs should just be the 
+    rc, raw_fs, err = module.run_command("%s -c /dev/null -o value -s TYPE %s" % (cmd, dev))
     # In case blkid isn't able to identify an existing filesystem, device is considered as empty,
     # then this existing filesystem would be overwritten even if force isn't enabled.
     fs = raw_fs.strip()
