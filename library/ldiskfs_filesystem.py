@@ -328,7 +328,7 @@ def main():
           elif (existing_target_type.lower() != target_type):
             module.fail_json(msg="Device '{}' is already used as a different target type {}, "
                                  "full label: {}. Use force=yes to "
-                                 "overwrite".format(dev, existing_target_type, target_type, fs_label), rc=rc, err=err)
+                                 "overwrite".format(dev, existing_target_type, fs_label), rc=rc, err=err)
           elif (existing_index != new_index):
             module.fail_json(msg="Device '{}' is already used with a different index {}, instead of {}, "
                                  "full label: {}. Use force=yes to "
