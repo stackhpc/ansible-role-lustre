@@ -4,10 +4,19 @@
 
 # PyYAML is required for this role's modules to function, we force this
 # to be installed even in check-mode, since otherwise the modules will fail
+- name: "Check for python yaml support"
+  command:
+    cmd: "{{ ansible_python.executable }} -c 'import yaml'"
+  register: has_yaml
+  failed_when: false
+  changed_when: false
+  check_mode: no
+
 - name: "Install PyYAML package"
   package:
     name: "{{ lustre_pyyaml_package }}"
     state: present
+  when: has_yaml.rc != 0 # ModuleNotFoundError only introduced in python3.6
   check_mode: no
 
 - name: "Include OS-specific package installation tasks"
