@@ -2,6 +2,14 @@
 - name: "Configure Lustre package repository"
   when: lustre_manage_repo | bool
   block:
+
+    - name: Check Lustre repo URL is valid
+      uri:
+        url: "{{ lustre_repo_baseurl }}/{{ lustre_install_type }}"
+        method: HEAD
+      register: repo_uri_test
+      failed_when: repo_uri_test.status != 200
+
     - name: "Install Lustre packages yum repo"
       yum_repository:
         name: "{{ lustre_repo_name }}"
