@@ -9,7 +9,7 @@
         state: directory
 
     - name: "mount MGS"
-      command: "mount -t lustre {{ lustre_format_mgs.device }} {{ lustre_mount_prefix }}/MGS"
+      command: "mount -t lustre -L MGS {{ lustre_mount_prefix }}/MGS"
       register: cmd_mgs_result
       failed_when: "cmd_mgs_result.rc != 0 and ('is already mounted' not in cmd_mgs_result.stderr)"
       changed_when: "cmd_mgs_result.rc == 0"
@@ -23,9 +23,14 @@
         path: "{{ lustre_mount_prefix }}/{{ lustre_fsname }}-MDT{{ '%04x' % item.index | int }}"
         state: directory
       with_items: "{{ lustre_format_mdts }}"
+    
+    - name: Get lustre MDT label format
+      shell: "lsblk -o label | grep -o [:-]MDT"
+      register: lsblk_mdt
+      changed_when: false
 
     - name: "mount MDTs"
-      command: "mount -t lustre {{ item.device }} {{ lustre_mount_prefix }}/{{ lustre_fsname }}-MDT{{ '%04x' % item.index | int }}"
+      command: "mount -t lustre -L {{ lustre_fsname }}{{ lsblk_mdt.stdout[0] }}MDT{{ '%04x' % item.index | int }} {{ lustre_mount_prefix }}/{{ lustre_fsname }}-MDT{{ '%04x' % item.index | int }}"
       register: cmd_mgt_result
       failed_when: "cmd_mgt_result.rc != 0 and ('is already mounted' not in cmd_mgt_result.stderr)"
       changed_when: "cmd_mgt_result.rc == 0"
@@ -41,8 +46,13 @@
         state: directory
       with_items: "{{ lustre_format_osts }}"
 
+    - name: Get lustre OST label format # will be same as MDT format but might not have run that
+      shell: "lsblk -o label | grep -o [:-]OST"
+      register: lsblk_ost
+      changed_when: false
+
     - name: "mount OSTs"
-      command: "mount -t lustre {{ item.device }} {{ lustre_mount_prefix }}/{{ lustre_fsname }}-OST{{ '%04x' % item.index | int }}"
+      command: "mount -t lustre -L {{ lustre_fsname }}{{ lsblk_ost.stdout[0] }}OST{{ '%04x' % item.index | int }} {{ lustre_mount_prefix }}/{{ lustre_fsname }}-OST{{ '%04x' % item.index | int }}"
       register: cmd_ost_result
       failed_when: "cmd_ost_result.rc != 0 and ('is already mounted' not in cmd_ost_result.stderr)"
       changed_when: "cmd_ost_result.rc == 0"
