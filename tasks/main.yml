@@ -54,6 +54,11 @@
     - lustre_backend_filesystem == 'ldiskfs'
     - lustre_state == 'present'
 
+- name: "Include nodemap configuration tasks"
+  include_tasks: "nodemap.yml"
+  when:
+    - - "'server' in lustre_install_type"
+
 - name: "Include LDISKFS filesystem unmount tasks"
   include_tasks: "unmount-ldiskfs.yml"
   when:

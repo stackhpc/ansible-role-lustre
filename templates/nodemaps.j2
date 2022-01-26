@@ -1,0 +1,35 @@
+nodemap:
+  active: 1
+  default:
+    admin_nodemap: 0
+    audit_mode: 1
+    fileset: ''
+    id: 0
+    squash_gid: 99
+    squash_uid: 99
+    trusted_nodemap: 0
+{% for nodemap in lustre_nodemaps | default([]) %}
+  {{ nodemap.name }}:
+    admin_nodemap: {{ nodemap.admin_nodemap | default(false) | int }}
+    audit_mode: {{ nodemap.admin_nodemap | default(true) | int }}
+    deny_unknown: {{ nodemap.deny_unknown | default(false) | int }}
+    fileset: '{{ nodemap.fileset | default('') }}'
+{% if nodemap.idmaps | default([]) | length == 0 %}
+    idmap: []
+{% else %}
+    idmap:
+{% for idmap in nodemap.idmaps | default([]) %}
+    - client_id: {{ idmap.client_id }}
+      fs_id: {{ idmap.fs_id }}
+      idtype: {{ idmap.idtype }}
+{% endfor %}
+{% endif %}
+    ranges:
+{% for nid_range in nodemap.ranges | default([]) %}
+    - start_nid: {{ nid_range.start_nid }}
+      end_nid: {{ nid_range.end_nid }}
+{% endfor %}
+    squash_gid: {{ nodemap.squash_gid | default(99) }}
+    squash_uid: {{ nodemap.squash_uid | default(99) }}
+    trusted_nodemap: {{ nodemap.trusted_nodemap | default(false) | int }}
+{% endfor %}
