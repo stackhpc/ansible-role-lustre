@@ -162,7 +162,7 @@ def deep_sort(data):
         for item in data:
             deep_sort(item)
     elif isinstance(data, dict):
-        for item in data.itervalues():
+        for item in data.values():
             deep_sort(item)
     return None
 
@@ -179,7 +179,7 @@ def to_int(data, key_or_idx=None):
         for idx, v in enumerate(value):
             to_int(value, idx)
     elif isinstance(value, dict):
-        for k, v in value.iteritems():
+        for k, v in value.items():
             to_int(value, k)
     elif isinstance(value, str):
         if value.isdigit():
@@ -363,16 +363,13 @@ def run_module():
         argument_spec=module_args,
         supports_check_mode=True,
     )
-
-    if module.check_mode:
-        module.exit_json(**result) # TODO:
     
     nodemap_a = load_live(module)
     nodemap_b = load_from_file(module.params['src'])
     changes = diff(nodemap_a, nodemap_b)
     result['diff'] = changes_to_yaml(changes)
     result['changed'] = bool(changes)
-    if changes:
+    if changes and not module.check_mode:
         make_changes(module, changes)
     module.exit_json(**result)
 
